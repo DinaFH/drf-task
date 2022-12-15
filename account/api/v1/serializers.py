@@ -45,6 +45,11 @@ class AddEmployeeSerializer(serializers.ModelSerializer):
             model = User
             fields = '__all__'
 
+class AddClientSerializer(serializers.ModelSerializer):
+        type = serializers.ReadOnlyField(default='client')
+        class Meta:
+            model = User
+            fields = '__all__'
 class ChangePasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

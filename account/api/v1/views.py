@@ -2,9 +2,10 @@ from rest_framework.decorators import authentication_classes, permission_classes
 from django.contrib.auth import logout as django_logout
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import SignUpSerializer ,ChangePasswordSerializer,AddEmployeeSerializer
+from .serializers import SignUpSerializer ,ChangePasswordSerializer,AddEmployeeSerializer,AddClientSerializer
 from  account.models import User
 from rest_framework import generics
+from .permissions import IsEmployee
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated ,IsAdminUser
@@ -38,6 +39,22 @@ def add_employee(request):
     response = {'data': None, 'status': status.HTTP_400_BAD_REQUEST}
     # **response -> data={},status=status.HTTP_400_BAD_REQUEST
     serializer = AddEmployeeSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        response['data'] = serializer.data
+        response['status'] = status.HTTP_201_CREATED
+    else:
+        response['data'] = serializer.errors
+
+    return Response(**response)
+
+@api_view(["POST"])
+@permission_classes([IsEmployee])
+def add_client(request):
+    response = {'data': None, 'status': status.HTTP_400_BAD_REQUEST}
+    # **response -> data={},status=status.HTTP_400_BAD_REQUEST
+    serializer = AddClientSerializer(data=request.data)
 
     if serializer.is_valid():
         serializer.save()
