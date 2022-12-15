@@ -43,7 +43,8 @@ DEFAULT_APPS = [
 ]
 HELPER_APPS= ['rest_framework',
               'rest_framework.authtoken',
-              'django_extensions'
+              'django_extensions',
+              'django_rest_passwordreset',
               ]
 MY_CUSTOM_APPS= ['account',]
 INSTALLED_APPS = DEFAULT_APPS + HELPER_APPS + MY_CUSTOM_APPS
@@ -138,3 +139,4 @@ REST_FRAMEWORK = {
         ['rest_framework.permissions.IsAuthenticated'],
 }
 AUTH_USER_MODEL = 'account.User'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

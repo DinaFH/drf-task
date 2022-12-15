@@ -37,3 +37,12 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.set_password(self.validated_data.get('password'))
         user.save()
         return user
+
+
+class ChangePasswordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields=['old_password','new_password']
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+

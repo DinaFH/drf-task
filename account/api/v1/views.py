@@ -1,15 +1,16 @@
-
 from rest_framework.decorators import authentication_classes, permission_classes, api_view
 from django.contrib.auth import logout as django_logout
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import SignUpSerializer
+from .serializers import SignUpSerializer ,ChangePasswordSerializer
+from  account.models import User
+from rest_framework import generics
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
-
+#function-based views
 @api_view(["POST"])
 def logout(request):
     request.user.auth_token.delete()
@@ -29,3 +30,39 @@ def signup(request):
     else:
         response['data'] = serializer.errors
     return Response(**response)
+#generic-views
+class ChangePasswordView(generics.UpdateAPIView):
+    """
+    An endpoint for changing password.
+    """
+    serializer_class = ChangePasswordSerializer
+    model = User
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # Check old password
+            if not self.object.check_password(serializer.data.get("old_password")):
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            # set_password also hashes the password that the user will get
+            self.object.set_password(serializer.data.get("new_password"))
+            self.object.save()
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Password updated successfully',
+                'data': []
+            }
+
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
