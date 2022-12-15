@@ -43,6 +43,7 @@ DEFAULT_APPS = [
 ]
 HELPER_APPS= ['rest_framework',
               'rest_framework.authtoken',
+              'django_extensions'
               ]
 MY_CUSTOM_APPS= ['account',]
 INSTALLED_APPS = DEFAULT_APPS + HELPER_APPS + MY_CUSTOM_APPS
@@ -136,3 +137,4 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES':
         ['rest_framework.permissions.IsAuthenticated'],
 }
+AUTH_USER_MODEL = 'account.User'
