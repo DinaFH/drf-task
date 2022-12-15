@@ -45,6 +45,7 @@ HELPER_APPS= ['rest_framework',
               'rest_framework.authtoken',
               'django_extensions',
               'django_rest_passwordreset',
+              'drf-yasg',
               ]
 MY_CUSTOM_APPS= ['account',]
 INSTALLED_APPS = DEFAULT_APPS + HELPER_APPS + MY_CUSTOM_APPS
