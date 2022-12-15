@@ -11,12 +11,12 @@
 
 to install enivronment:
 
-    `python3 -v venv random_quote_env`
-    `python3 -m venv random_quote_env`
+    `python3 -v venv drf_env`
+    `python3 -m venv drf_env`
 
 to Activate Environment:
 
-    `source random_quote-env/bin/activate`
+    `source drf-env/bin/activate`
 to install django as a local pacakge inside the environment:
 
    `pip install django`
