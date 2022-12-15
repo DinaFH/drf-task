@@ -9,7 +9,10 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'type',  'gender', 'date_of_birth']
         depth = 1
-
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'type',  'gender', 'date_of_birth']
 
 class SignUpSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(write_only=True)

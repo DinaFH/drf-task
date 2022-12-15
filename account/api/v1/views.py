@@ -2,14 +2,13 @@ from rest_framework.decorators import authentication_classes, permission_classes
 from django.contrib.auth import logout as django_logout
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import SignUpSerializer ,ChangePasswordSerializer,AddEmployeeSerializer,AddClientSerializer
+from .serializers import SignUpSerializer ,ChangePasswordSerializer,AddEmployeeSerializer,AddClientSerializer,UserSerializer,UserUpdateSerializer
 from  account.models import User
 from rest_framework import generics
-from .permissions import IsEmployee
+from .permissions import IsEmployee ,IsOwner
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated ,IsAdminUser
-from rest_framework.authentication import TokenAuthentication
+
 
 
 @api_view(["POST"])
@@ -65,6 +64,61 @@ def add_client(request):
 
     return Response(**response)
 
+@api_view(['GET'])
+def list_users(request):
+    users = User.objects.all().exclude(id=1)
+    serializer = UserSerializer(users, many=True)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def user_details(request, user_id):
+    response = {'data': {}, 'status': status.HTTP_204_NO_CONTENT}
+    try:
+        if user_id != 1:
+            user = User.objects.get(id=user_id)
+            serializer = UserSerializer(user, many=False)
+            response['data'] = serializer.data
+            response['status'] = status.HTTP_200_OK
+        else:
+            response['data'] = {'no content'}
+            response['status'] = status.HTTP_200_OK
+    except ObjectDoesNotExist:
+        response['data'] = {'no content'}
+        response['status'] = status.HTTP_204_NO_CONTENT
+    except:
+        response['data'] = {'internal server error'}
+        response['status'] = status.HTTP_500_INTERNAL_SERVER_ERROR
+    finally:
+        return Response(**response)
+
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsOwner])
+def update_user(request, user_id):
+    response = {'data': {}, 'status': status.HTTP_204_NO_CONTENT}
+    user_instance = User.objects.get(id=user_id)
+
+    if request.method == 'PUT':
+        serializer = UserUpdateSerializer(instance=user_instance, data=request.data)
+    else:
+        serializer = UserUpdateSerializer(instance=user_instance, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        response['data'] = serializer.data['username']
+        response['status'] = status.HTTP_200_OK
+    else:
+        response['data'] = serializer.errors
+        response['status'] = status.HTTP_400_BAD_REQUEST
+
+    return Response(**response)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def delete_user(request, **kwargs):
+    user_id = kwargs.get('user_id')
+    User.objects.get(pk=user_id).delete()
+    return Response(data={'detail': 'deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
 class ChangePasswordView(generics.UpdateAPIView):
     """
