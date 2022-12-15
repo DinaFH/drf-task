@@ -28,7 +28,6 @@ class User(AbstractUser):
   REQUIRED_FIELDS = ['email', 'password', 'gender', 'type', 'date_of_birth']
 
 
-
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
 

@@ -8,5 +8,5 @@ urlpatterns=[
     path('logout', logout, name="logout"),
     path('signup',signup,name='signup'),
     path('change-password',ChangePasswordView.as_view(),name='change-password'),
-    path('reset-password', include('django_rest_passwordreset.urls', namespace='password_reset')),
+   
 ]
