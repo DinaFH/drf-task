@@ -22,6 +22,7 @@ class SignUpSerializer(serializers.ModelSerializer):
         }
 
 
+
     def save(self, **kwargs):
         user = User(
             username=self.validated_data.get('username'),
@@ -38,6 +39,11 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+class AddEmployeeSerializer(serializers.ModelSerializer):
+        type = serializers.ReadOnlyField(default='employee')
+        class Meta:
+            model = User
+            fields = '__all__'
 
 class ChangePasswordSerializer(serializers.ModelSerializer):
     class Meta:

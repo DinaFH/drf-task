@@ -2,15 +2,15 @@ from rest_framework.decorators import authentication_classes, permission_classes
 from django.contrib.auth import logout as django_logout
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import SignUpSerializer ,ChangePasswordSerializer
+from .serializers import SignUpSerializer ,ChangePasswordSerializer,AddEmployeeSerializer
 from  account.models import User
 from rest_framework import generics
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated ,IsAdminUser
 from rest_framework.authentication import TokenAuthentication
 
-#function-based views
+
 @api_view(["POST"])
 def logout(request):
     request.user.auth_token.delete()
@@ -30,7 +30,25 @@ def signup(request):
     else:
         response['data'] = serializer.errors
     return Response(**response)
-#generic-views
+
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def add_employee(request):
+    response = {'data': None, 'status': status.HTTP_400_BAD_REQUEST}
+    # **response -> data={},status=status.HTTP_400_BAD_REQUEST
+    serializer = AddEmployeeSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        response['data'] = serializer.data
+        response['status'] = status.HTTP_201_CREATED
+    else:
+        response['data'] = serializer.errors
+
+    return Response(**response)
+
+
 class ChangePasswordView(generics.UpdateAPIView):
     """
     An endpoint for changing password.
